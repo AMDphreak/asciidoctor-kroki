@@ -23,7 +23,8 @@ Gem::Specification.new do |s|
   rescue StandardError
     files = Dir['**/*']
   end
-  s.files = files + ['../README.md']
+  files |= ['README.md']
+  s.files = files
   s.require_paths = ['lib']
 
   s.add_dependency 'asciidoctor', '~> 2.0'
