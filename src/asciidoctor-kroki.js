@@ -64,7 +64,7 @@ const createImageSrc = (doc, krokiDiagram, target, vfs, krokiClient) => {
   const shouldFetch = doc.isAttribute('kroki-fetch-diagram')
   let imageUrl
   if (shouldFetch && doc.getSafe() < SAFE_MODE_SECURE) {
-    imageUrl = require('./fetch.js').save(krokiDiagram, doc, target, vfs, krokiClient)
+    imageUrl = require(/* webpackIgnore: true */ './fetch.js').save(krokiDiagram, doc, target, vfs, krokiClient)
   } else {
     imageUrl = krokiDiagram.getDiagramUri(krokiClient.getServerUrl())
   }
@@ -105,16 +105,16 @@ const processKroki = (processor, parent, attrs, diagramType, diagramText, contex
   }
   if (doc.getSafe() < SAFE_MODE_SECURE) {
     if (diagramType === 'vegalite') {
-      diagramText = require('./preprocess.js').preprocessVegaLite(diagramText, context, (resource && resource.dir) || '')
+      diagramText = require(/* webpackIgnore: true */ './preprocess.js').preprocessVegaLite(diagramText, context, (resource && resource.dir) || '')
     } else if (diagramType === 'plantuml' || diagramType === 'c4plantuml') {
       const plantUmlIncludeFile = doc.getAttribute('kroki-plantuml-include')
       if (plantUmlIncludeFile) {
         diagramText = `!include ${plantUmlIncludeFile}\n${diagramText}`
       }
       const plantUmlIncludePaths = doc.getAttribute('kroki-plantuml-include-paths')
-      diagramText = require('./preprocess.js').preprocessPlantUML(diagramText, context, plantUmlIncludePaths, resource)
+      diagramText = require(/* webpackIgnore: true */ './preprocess.js').preprocessPlantUML(diagramText, context, plantUmlIncludePaths, resource)
     } else if (diagramType === 'structurizr') {
-      diagramText = require('./preprocess.js').preprocessStructurizr(diagramText, context, resource)
+      diagramText = require(/* webpackIgnore: true */ './preprocess.js').preprocessStructurizr(diagramText, context, resource)
     }
   }
   const blockId = attrs.id
@@ -147,7 +147,7 @@ const processKroki = (processor, parent, attrs, diagramType, diagramText, contex
   }
   const opts = Object.fromEntries(Object.entries(attrs).filter(([key, _]) => !key.endsWith('-option') && !BUILTIN_ATTRIBUTES.includes(key)))
   const krokiDiagram = new KrokiDiagram(diagramType, format, diagramText, opts)
-  const httpClient = isBrowser() ? require('./http/browser-http.js') : require('./http/node-http.js')
+  const httpClient = isBrowser() ? require(/* webpackIgnore: true */ './http/browser-http.js') : require(/* webpackIgnore: true */ './http/node-http.js')
   const krokiClient = new KrokiClient(doc, httpClient)
   let block
   if (format === 'txt' || format === 'atxt' || format === 'utxt') {
@@ -212,7 +212,7 @@ function diagramBlockMacro (name, context) {
         }
       } else {
         if (vfs === undefined || typeof vfs.read !== 'function') {
-          vfs = require('./node-fs.js')
+          vfs = require(/* webpackIgnore: true */ './node-fs.js')
           target = parent.normalizeSystemPath(target)
         }
       }
@@ -235,7 +235,7 @@ function diagramBlockMacro (name, context) {
 module.exports.register = function register (registry, context = {}) {
   // patch context in case of Antora
   if (typeof context.contentCatalog !== 'undefined' && typeof context.contentCatalog.addFile === 'function' && typeof context.file !== 'undefined') {
-    context.vfs = require('./antora-adapter.js')(context.file, context.contentCatalog, context.vfs)
+    context.vfs = require(/* webpackIgnore: true */ './antora-adapter.js')(context.file, context.contentCatalog, context.vfs)
   }
   context.logger = Opal.Asciidoctor.LoggerManager.getLogger()
   const names = [
